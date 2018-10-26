@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotBlank;
 
 @Entity
 public class Friend {
@@ -20,9 +21,10 @@ public class Friend {
         this.id = id;
     }
 
-
-
+    @NotBlank
     private String lastName;
+    @NotBlank
+    private String firstName;
 
     public String getLastName() {
         return lastName;
@@ -32,6 +34,7 @@ public class Friend {
         this.lastName = lastName;
     }
 
+
     public String getFirstName() {
         return firstName;
     }
@@ -40,6 +43,13 @@ public class Friend {
         this.firstName = firstName;
     }
 
-    private String firstName;
 
+    public Friend(String lastName, String firstName) {
+        this.lastName = lastName;
+        this.firstName = firstName;
+    }
+
+    public Friend() {
+
+    }
 }

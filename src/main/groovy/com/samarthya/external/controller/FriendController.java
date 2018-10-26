@@ -2,12 +2,18 @@ package com.samarthya.external.controller;
 
 import com.samarthya.external.model.Friend;
 import com.samarthya.external.service.FriendService;
+import com.samarthya.external.utils.FieldErrorMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import javax.xml.bind.ValidationException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 public class FriendController {
@@ -15,16 +21,22 @@ public class FriendController {
     FriendService friendService;
 
     @GetMapping("/friend")
-    Iterable<Friend> read() {
+    public Iterable<Friend> read() {
         return friendService.findAll();
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public List<FieldErrorMessage> exceptionHandler(MethodArgumentNotValidException e) {
+        List<FieldError> fieldErrors = e.getBindingResult().getFieldErrors();
+        return fieldErrors.stream().map(fieldError ->
+                new FieldErrorMessage(fieldError.getField(), fieldError.getDefaultMessage()))
+                .collect(Collectors.toList());
+    }
+
     @PostMapping("/friend")
-    Friend create(@RequestBody Friend friend) throws ValidationException {
-        if(friend != null && friend.getFirstName() != null && friend.getLastName() != null && friend.getId() != 0)
-            return friendService.save(friend);
-        else
-            throw new ValidationException(" Cannot create the friend");
+    public Friend create(@Valid @RequestBody Friend friend) throws ValidationException {
+        return friendService.save(friend);
     }
 
     @PutMapping("/friend")
@@ -36,7 +48,7 @@ public class FriendController {
     }
 
     @DeleteMapping("/friend/{id}")
-    void delete(@PathVariable Integer id) {
+    public void delete(@PathVariable Integer id) {
         friendService.deleteById(id);
     }
 }
