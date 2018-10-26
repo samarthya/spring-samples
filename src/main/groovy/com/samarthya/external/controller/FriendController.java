@@ -2,7 +2,6 @@ package com.samarthya.external.controller;
 
 import com.samarthya.external.model.Friend;
 import com.samarthya.external.service.FriendService;
-import com.samarthya.external.utils.Errors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,12 +13,6 @@ import javax.xml.bind.ValidationException;
 public class FriendController {
     @Autowired
     FriendService friendService;
-
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(ValidationException.class)
-    Errors exceptionHandler(ValidationException e) {
-        return new Errors( e.getMessage(), 400);
-    }
 
     @GetMapping("/friend")
     Iterable<Friend> read() {
